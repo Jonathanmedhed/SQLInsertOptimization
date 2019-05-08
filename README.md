@@ -5,14 +5,21 @@ This code will allow you to insert an Array of objects into a database in a more
 Using a for loop to construct the query, in order to insert thousands of rows using only one insert
 query; here is an example of the console results:
 
-Inserting 1000 rows. 
-Time taken insert All Once: 0.263 seconds .
-Time taken one by one: 48.777 seconds .
-Inserting 10000 rows.
-Time taken insert All Once: 7.808 seconds.
-Inserting 15000 rows.
-Time taken insert All Once: 28.57 seconds.
-BUILD SUCCESSFUL (total time: 1 minute 27 seconds).
+Inserting 1000 rows
+
+Time taken insert All Once: 0.263 seconds 
+
+Time taken one by one: 48.777 seconds 
+
+Inserting 10000 rows
+
+Time taken insert All Once: 7.808 seconds
+
+Inserting 15000 rows
+
+Time taken insert All Once: 28.57 seconds
+
+BUILD SUCCESSFUL (total time: 1 minute 27 seconds)
 
 Have a look at the 'database' package and then the 'saveCompanies' method in the 'MySQLOopDAO.java'
 to understand how the for loop builds the query.
