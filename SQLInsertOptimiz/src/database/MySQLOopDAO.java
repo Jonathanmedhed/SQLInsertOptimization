@@ -151,13 +151,21 @@ public class MySQLOopDAO implements OopDAO {
      */
     public boolean saveCompanies(List<Company> list) {
 
+        public boolean saveCompanies(List<Company> list2) {
+
         boolean result = false;
 
         /**
          * access the database
          */
         DataSource db = new DataSource();
-
+        
+        /**
+         * Editable list
+         */
+        List<Company> list = new CopyOnWriteArrayList<Company>();
+        list.addAll(list2);
+        
         /**
          * Beginning of the query, that will be appended to all the objects
          */
@@ -169,12 +177,16 @@ public class MySQLOopDAO implements OopDAO {
         
         // finding the time before the operation is executed
         long start = System.currentTimeMillis();
+        //row counter
+        int queryCounter = 0;
         for (Company company : list) {
+            queryCounter++;
             String name1 = company.getName();
             int shareNumber1 = company.getShareNumber();
             int sharesSold = company.getSharesSold();
             double sharePrice1 = company.getSharePrice();
-
+            //remove company from list
+            list.remove(company);
             /**
              * Create query string with the attributes
              */
@@ -183,30 +195,25 @@ public class MySQLOopDAO implements OopDAO {
              * Combine main query with this object query string
              */
             query = query + add;
+            /**
+             * if the row count for this query is 1k
+             * insert it and run method with the new list
+             */
+            if (queryCounter == 1000 || list.isEmpty()) {
+                query = query.substring(0, query.length() - 1);
+                result = db.save(query);
+                System.out.println(query);
+                //If list size is under 5000 user a different method
+                if (list.isEmpty()) {
+                    return result;
+                } else {
+                    //repeat method with new list
+                    saveCompanies(list);
+                }
+                break;
+            }
         }
         
-        /**
-         * Remove ',' from the end of the query
-         */
-        query = query.substring(0, query.length() - 1);
-        /**
-         * Save all companies with one query
-         */
-        result = db.save(query);
-        // finding the time after the operation is executed
-        long end = System.currentTimeMillis();
-        //finding the time difference and converting it into seconds
-        float sec = (end - start) / 1000F; 
-        System.out.println("Time taken insert All Once: "+sec + " seconds");
-
-        /**
-         * Close connection to database
-         */
-        db.closing();
-
-        /**
-         * Return if success
-         */
         return result;
 
     }
